@@ -2,24 +2,33 @@
 
 ### Example
 
+        //@RunWith(MockitoJUnitRunner.class)//JUnit4
+        @ExtendWith(MockitoExtension.class) //JUnit5
         class BusinessTest {
 
-            private BusinessImpl business;
+            @InjectMocks
+            private Business business;
+            @Mock
+            private DataService data;
 
-            public BusinessTest() {
-                business = new BusinessImpl();
+            void test(int[] array, int expected) {
+                when(data.getArray()).thenReturn(array);
+                assertEquals(expected, business.sum());
             }
 
             @Test
-            void sum() {
-                int expectedResult = 20;
+            void sum_null() {
+                test(null, 0);
+            }
 
-                DataService dataMock = mock(DataService.class);
-                when(dataMock.getArray()).thenReturn(new int[] {7, 11, -3, 5});
-                business.setData(dataMock);
-                int actualResult = business.sum();
+            @Test
+            void sum_empty() {
+                test(new int[] {}, 0);
+            }
 
-                assertEquals(expectedResult, actualResult);
+            @Test
+            void sum_basic() {
+                test(new int[] {7, 11, -3, 5}, 20);
             }
         }
 
@@ -27,7 +36,7 @@
             int[] getArray();
         }
 
-        public class BusinessImpl {
+        public class Business {
 
             private DataService data;
 
@@ -47,7 +56,5 @@
                 return sum;
             }
         }
-
-
 
 
